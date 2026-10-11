@@ -14,7 +14,7 @@ export default function Home() {
       {/* ================= BRAND ================= */}
 
       <header className="absolute left-0 top-0 z-30 w-full pt-6 text-center">
-        <h1 className="text-[20px] font-semibold tracking-[0.38em]">
+       <h1 className="text-[13px] font-semibold tracking-[0.15em] sm:text-[20px] sm:tracking-[0.38em]">
           PHOTOBOOTH
           <span className="ml-2 text-[#a56f63]">
             DIGITALKU
@@ -29,6 +29,7 @@ export default function Home() {
       </header>
 
       {/* LEFT PHOTO STRIP */}
+
 <Image
   src="/homepage/strip2.png"
   alt="Left photo strip"
@@ -36,50 +37,64 @@ export default function Home() {
   height={650}
   className="
     absolute
-    left-[-6%]
-    top-[2%]
+   left-[-8%] top-[9%]
     z-[15]
-    hidden
-    h-[530px]
-    w-auto
+    block
+    h-auto w-[300px]
     rotate-[5deg]
     object-contain
     drop-shadow-[0_20px_16px_rgba(0,0,0,0.22)]
-    xl:block
+    xl:left-[-6%] xl:top-[2%]
+    xl:h-[530px] xl:w-auto
   "
   priority
 />
+
       {/* ================= RIGHT POLAROID ================= */}
 
-      <Image
-        src="/homepage/polaroidhitam-right.png"
-        alt="Black photo booth example"
-        width={200}
-        height={400}
-        className="absolute -right-[-2%] top-[4%] z-10 hidden h-auto w-[100px] rotate-[6deg] object-contain drop-shadow-[0_24px_20px_rgba(0,0,0,0.20)] lg:block xl:w-[310px]"
-        priority
-      />
-{/* RIGHT PINK POLAROID */}
+      
 <Image
-  src="/homepage/polaroid2.png"
-  alt="White polaroid right"
+  src="/homepage/polaroidhitam-right.png"
+  alt="Black photo booth example"
+  width={200}
+  height={400}
+  className="
+    absolute
+    right-[1%] top-[8%]
+    z-10
+    block
+    h-auto w-[200px]
+    rotate-[6deg]
+    object-contain
+    drop-shadow-[0_24px_20px_rgba(0,0,0,0.20)]
+    lg:right-[2%] lg:top-[4%] lg:w-[100px]
+    xl:w-[300px]
+  "
+  priority
+/>
+
+{/* RIGHT PINK POLAROID */}
+
+<Image
+  src="/homepage/Polaroid2.png"
+  alt="Polaroid kanan"
   width={400}
   height={500}
   className="
     absolute
-    right-[-2%]
-    top-[21%]
-    z-[12]
-    hidden
-    h-auto
-    w-[450px]
+    right-[-4%] bottom-[25%]
+    z-[30]
+    block
+    h-auto w-[240px]
     rotate-[8deg]
     object-contain
     drop-shadow-[0_20px_18px_rgba(0,0,0,0.20)]
-    xl:block
+    xl:right-[2%] xl:bottom-[5%]
+    xl:w-[400px] xl:rotate-0
   "
   priority
 />
+
       {/* ================= SPARKLES ================= */}
 
       <span className="absolute left-[5%] top-[15%] z-20 text-[25px] text-[#b77667]">
@@ -96,6 +111,7 @@ export default function Home() {
 
 {/* ================= PINK CAMERA DECOR ================= */}
 
+
 <Image
   src="/homepage/cameragold.png"
   alt="Gold camera"
@@ -103,20 +119,21 @@ export default function Home() {
   height={400}
   className="
     absolute
-    left-[18%]
-    top-[18%]
+    left-[16%] top-[24%]
     z-[12]
-    hidden
-    h-auto
-    w-[220px]
+    block
+    h-auto w-[115px]
     -rotate-[8deg]
     object-contain
     drop-shadow-[0_18px_16px_rgba(0,0,0,0.18)]
-    xl:block
+    xl:left-[18%] xl:top-[18%]
+    xl:w-[220px]
   "
   priority
 />
+
 {/* ================= LIGHTING DECOR ================= */}
+
 
 <Image
   src="/homepage/lighting.png"
@@ -125,16 +142,15 @@ export default function Home() {
   height={500}
   className="
     absolute
-    left-[15%]
-    top-[50%]
+    left-[6%] bottom-[15%]
     z-[11]
-    hidden
-    h-auto
-    w-[250px]
+    block
+    h-auto w-[150px]
     rotate-[3deg]
     object-contain
     drop-shadow-[0_18px_16px_rgba(0,0,0,0.16)]
-    xl:block
+    xl:left-[15%] xl:top-[50%] xl:bottom-auto
+    xl:w-[250px]
   "
   priority
 />
@@ -142,10 +158,12 @@ export default function Home() {
 
       {/* ================= CENTER CONTENT ================= */}
 
-      <section className="relative z-20 mx-auto flex h-[100dvh] w-[620px] max-w-[44vw] translate-y-[18px] flex-col items-center justify-center py-[2vh] text-center">
+      
+<section className="relative z-20 mx-auto flex h-[100dvh] w-full max-w-[94vw] translate-y-[18px] flex-col items-center justify-center px-3 py-[2vh] text-center xl:w-[620px] xl:max-w-[44vw] xl:px-0">
 
 
-        <h2 className="font-serif text-[60px] font-medium leading-[0.88] tracking-[-0.045em] text-[#242322] lg:text-[74px]">
+
+        <h2 className="font-serif text-[43px] font-medium leading-[0.95] tracking-[-0.045em] text-[#242322] sm:text-[60px] lg:text-[74px]">
           Capture Your
           <br />
           Moment.
@@ -166,7 +184,7 @@ export default function Home() {
             relative
             mt-6
             flex
-            min-w-[390px]
+           min-w-0 w-full max-w-[390px] xl:min-w-[390px]
             items-center
             justify-center
             overflow-hidden
@@ -201,7 +219,7 @@ export default function Home() {
 
         {/* ================= CARA PAKAI ================= */}
 
-        <div className="mt-6 w-[590px] max-w-full">
+        <div className="mt-6 w-full max-w-[590px] px-2 sm:px-0">
 
           <div className="flex items-center justify-center gap-4">
             <div className="h-px w-28 bg-gradient-to-r from-transparent to-[#a76e61]" />
@@ -213,7 +231,7 @@ export default function Home() {
             <div className="h-px w-28 bg-gradient-to-l from-transparent to-[#a76e61]" />
           </div>
 
-          <div className="mx-auto mt-4 grid max-w-[520px] grid-cols-3">
+         <div className="mx-auto mt-4 grid w-full max-w-[520px] grid-cols-3 gap-1 sm:gap-3">
 
             <HowTo
               number="01"
@@ -265,6 +283,7 @@ export default function Home() {
    HOW TO
 ============================================================ */
 
+
 function HowTo({
   number,
   icon,
@@ -280,11 +299,11 @@ function HowTo({
 }) {
   return (
     <div
-      className={`px-5 ${
+      className={`min-w-0 px-1 text-center sm:px-5 ${
         border ? "border-x border-[#967e78]/40" : ""
       }`}
     >
-      <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-full border border-[#b27567] text-[17px] text-[#965f54]">
+      <div className="mx-auto flex h-8 w-8 items-center justify-center rounded-full border border-[#b27567] text-[15px] text-[#965f54] sm:h-10 sm:w-10 sm:text-[17px]">
         {icon}
       </div>
 
@@ -292,11 +311,11 @@ function HowTo({
         {number}
       </p>
 
-      <p className="mt-1 whitespace-nowrap text-[14px] font-bold text-[#272625]">
+      <p className="mt-1 text-[11px] font-bold leading-tight text-[#272625] sm:whitespace-nowrap sm:text-[14px]">
         {title}
       </p>
 
-      <p className="mt-[3px] whitespace-nowrap text-[10px] text-[#625d5b]">
+      <p className="mt-[3px] text-[9px] leading-snug text-[#625d5b] sm:whitespace-nowrap sm:text-[10px]">
         {text}
       </p>
     </div>
