@@ -2,6 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { premiumFrames } from "@/lib/premiumFrames";
+import { luxuryFrames } from "@/lib/luxuryFrames";
+import { premiumFrameGeometry } from "@/lib/premiumFrameGeometry";
 
 type LayoutId = "3cut" | "4cut" | "2x2" | "polaroid";
 type FrameColor = { name: string; hex: string; metallic?: boolean };
@@ -43,12 +46,12 @@ const gradients: Record<string, string> = {
   // METALLIC
   "#D4AF37": "linear-gradient(135deg,#795019 0%,#E6BF61 25%,#FFF1B0 45%,#B17A2E 70%,#F4D98A 100%)",
   "#B76E79": "linear-gradient(135deg,#854A53 0%,#D89A9F 25%,#FFE0D0 45%,#B46B76 70%,#F1B9B2 100%)",
-  "#358C98": "linear-gradient(135deg,#153C59 0%,#358C98 25%,#8CE3B4 50%,#A38DD9 75%,#233F79 100%)",
+"#C0C0C0": "linear-gradient(135deg, #525862 0%, #AEB7C2 20%, #FFFFFF 40%, #788390 65%, #E8EEF5 85%, #626C78 100%)",
 
   // PREMIUM
-  "#B8E6F5": "linear-gradient(135deg,#8ED9ED 0%,#F5C7EF 25%,#C7BEFF 50%,#B4F1DE 75%,#FFE8AD 100%)",
+ "#B8E6F5": "linear-gradient(135deg,#8ED9ED 0%,#F5C7EF 25%,#C7BEFF 50%,#B4F1DE 75%,#FFE8AD 100%)",
   "#F5F0EB": "linear-gradient(135deg,#DDDCE2 0%,#FFFDF8 30%,#EADFEB 55%,#FFFFFF 75%,#DCE9EB 100%)",
-  "#A8B2BF": "linear-gradient(135deg,#424A55 0%,#DDE5ED 20%,#FFFFFF 40%,#7C8795 65%,#EDF2F7 85%,#515C68 100%)",
+ "#358C98": "linear-gradient(135deg,#153C59 0%,#358C98 25%,#8CE3B4 50%,#A38DD9 75%,#233F79 100%)",
   "#69449E": "linear-gradient(135deg,#2B164B 0%,#69449E 25%,#D18AD8 50%,#F2B5B0 75%,#53307A 100%)",
 };
 
@@ -85,29 +88,74 @@ export default function BoothPage() {
   const router = useRouter();
   const [layoutId, setLayoutId] = useState<LayoutId>("4cut");
   const [color, setColor] = useState<FrameColor>(standardColors[0]);
+  const [frameType, setFrameType] = useState<"original" | "premium" | "luxury">("original");
+  const [luxuryFrameId, setLuxuryFrameId] = useState("luxury-001");
+  const selectedLuxuryFrame = luxuryFrames.find((item) => item.id === luxuryFrameId);
+  const [premiumFrameId, setPremiumFrameId] = useState("frame-001");
+  const selectedPremiumFrame = premiumFrames.find(
+  (item) => item.id === premiumFrameId
+);
   useEffect(() => {
     try {
       const raw = localStorage.getItem(DRAFT_KEY);
       if (!raw) return;
       const draft = JSON.parse(raw) as { layout?: LayoutId; color?: string };
       if (layouts.some((item) => item.id === draft.layout)) setLayoutId(draft.layout!);
-      const savedColor = [...standardColors, ...metallicColors].find((item) => item.hex === draft.color);
-      if (savedColor) setColor(savedColor);
+     
+if (draft.color && /^#[0-9A-Fa-f]{6}$/.test(draft.color)) {
+  const savedColor = [
+    ...metallicColors,
+    ...premiumColors,
+  ].find(
+    (item) => item.hex.toLowerCase() === draft.color!.toLowerCase()
+  );
+
+  setColor(
+    savedColor ?? {
+      name: "Custom Color",
+      hex: draft.color,
+    }
+  );
+}
+
     } catch { /* Draft tidak tersedia; gunakan pilihan default. */ }
   }, []);
   const layout = layouts.find((item) => item.id === layoutId)!;
-  const price =
-  5000 +
-  (premiumColors.some((item) => item.hex === color.hex)
-    ? 1500
-    : color.metallic
-    ? 1200
-    : 0);
-  function continueToCreate() {
-    // Data foto/stiker tidak disentuh. Create akan memulihkan draft dari IndexedDB.
-    router.push(`/create?layout=${layoutId}&color=${encodeURIComponent(color.hex)}`);
+ 
+
+const price =
+  frameType === "luxury"
+    ? (selectedLuxuryFrame?.price ?? 10000)
+    : frameType === "premium"
+    ? (selectedPremiumFrame?.price ?? 6900)
+    : 5000 +
+      (premiumColors.some((item) => item.hex === color.hex)
+        ? 1500
+        : color.metallic
+        ? 1200
+        : 0);
+
+
+ 
+function continueToCreate() {
+  if (frameType === "luxury") {
+    router.push(`/create?frameType=luxury&luxuryFrameId=${encodeURIComponent(luxuryFrameId)}`);
+    return;
   }
+  if (frameType === "premium") {
+    router.push(
+      `/create?frameType=premium&premiumFrameId=${encodeURIComponent(premiumFrameId)}`
+    );
+    return;
+  }
+
+  router.push(
+    `/create?layout=${layoutId}&color=${encodeURIComponent(color.hex)}`
+  );
+}
+
   return (
+
     <main className="min-h-screen bg-cover bg-center bg-fixed px-4 py-7 text-[#292929]" style={{ backgroundImage: "url('/backgroundbooth.jpg')", backgroundColor: "#eee9e5" }}>
       <div className="mx-auto max-w-6xl">
         <header className="flex items-center justify-between gap-4">
@@ -120,6 +168,105 @@ export default function BoothPage() {
         </div>
         <div className="mt-7 grid items-start gap-6 lg:grid-cols-[1fr_1fr]">
           <section className="space-y-6">
+            
+<div className="rounded-2xl bg-white/90 p-5 shadow-md">
+  <h2 className="text-base font-bold">
+    Pilih Jenis Frame
+  </h2>
+
+  <div className="mt-4 grid grid-cols-3 gap-3">
+    <button
+      type="button"
+      onClick={() => setFrameType("original")}
+      className={`rounded-xl border-2 px-4 py-3 font-semibold ${
+        frameType === "original"
+          ? "border-[#b58b50] bg-[#fff7e9]"
+          : "border-gray-200 bg-white"
+      }`}
+    >
+      Original Frame
+    </button>
+
+    <button
+      type="button"
+      onClick={() => setFrameType("premium")}
+      className={`rounded-xl border-2 px-4 py-3 font-semibold ${
+        frameType === "premium"
+          ? "border-[#b58b50] bg-[#fff7e9]"
+          : "border-gray-200 bg-white"
+      }`}
+    >
+      Premium Frame
+    </button>
+    <button type="button" onClick={() => setFrameType("luxury")}
+      className={`rounded-xl border-2 px-2 py-3 text-sm font-semibold ${frameType === "luxury" ? "border-[#b58b50] bg-[#fff7e9]" : "border-gray-200 bg-white"}`}>
+      Luxury Frame
+    </button>
+  </div>
+</div>
+
+{frameType === "luxury" && (
+  <div className="rounded-2xl bg-white/90 p-5 shadow-md">
+    <h2 className="font-bold">Luxury Frame Collection</h2>
+    <p className="mt-1 text-xs text-gray-500">Rp10.000 per frame • 1 foto</p>
+    <div className="mt-4 grid grid-cols-2 gap-3">
+      {luxuryFrames.map((frame) => (
+        <button key={frame.id} type="button" onClick={() => setLuxuryFrameId(frame.id)}
+          className={`rounded-xl border-2 p-2 ${luxuryFrameId === frame.id ? "border-[#b58b50] bg-[#fff7e9]" : "border-gray-200"}`}>
+          <img src={frame.image} alt={frame.name} className="mx-auto h-48 w-full object-contain" />
+          <span className="text-xs font-semibold">{frame.name}</span>
+        </button>
+      ))}
+    </div>
+  </div>
+)}
+{frameType === "premium" && (
+  <div className="rounded-2xl bg-white/90 p-5 shadow-md">
+    <h2 className="text-base font-bold">
+      Premium Frame Collection
+    </h2>
+
+    <p className="mt-1 text-xs text-gray-500">
+    Rp6.900 per frame • Geser untuk melihat desain
+    </p>
+      
+<div className="mt-4 grid max-h-[390px] grid-cols-3 gap-2 overflow-y-auto overflow-x-hidden pr-2 pb-2">
+
+{premiumFrames.map((frame) => (
+  <button
+    key={frame.id}
+    type="button"
+    onClick={() => setPremiumFrameId(frame.id)}
+    className={`min-w-0 rounded-xl border-2 p-1.5 ${
+      premiumFrameId === frame.id
+        ? "border-[#b58b50] bg-[#fff7e9]"
+        : "border-gray-200 bg-white"
+    }`}
+  >
+
+          <img
+            src={frame.image}
+            alt={frame.name}
+            className="h-44 w-full object-contain"
+          />
+
+<p className="mt-2 text-xs font-semibold">
+  {frame.name}
+</p>
+<p className="mt-1 text-xs font-semibold text-[#a47a46]">
+  Rp{frame.price.toLocaleString("id-ID")}
+</p>
+</button>
+
+      ))}
+    </div>
+  </div>
+)}
+
+
+{frameType === "original" && (
+  <>
+
             <div className="rounded-2xl bg-white/90 p-5 shadow-md">
               <h2 className="text-base font-bold">01. Pilih Layout</h2>
               <div className="mt-4 grid grid-cols-2 gap-3">
@@ -149,23 +296,42 @@ export default function BoothPage() {
               <p className="mt-1 text-xs text-gray-500">
   Standard Rp5.000 · Metallic Rp6.200 · Premium Rp6.500
 </p>
-              <h3 className="mt-5 text-sm font-semibold">Standard</h3>
-              <div className="mt-3 flex flex-wrap gap-3">
-                {standardColors.map((item) => (
-                  <button key={item.hex} type="button" title={item.name} aria-label={item.name} aria-pressed={color.hex === item.hex} onClick={() => setColor(item)} className={`h-11 w-11 rounded-full border-2 p-[3px] transition ${color.hex === item.hex ? "border-[#b58b50] ring-2 ring-[#e5c999]" : "border-gray-300"}`}>
-                    <span className="block h-full w-full rounded-full border border-black/10" style={{ background: item.hex }} />
-                  </button>
-                ))}
-              </div>
+              
+<h3 className="mt-5 text-sm font-semibold">
+  Standard
+</h3>
+
+<div className="mt-3">
+  <label className="block text-xs text-gray-600">
+    Warna Frame
+  </label>
+
+  <input
+    type="color"
+    value={color.metallic ? "#FFFFFF" : color.hex}
+    onChange={(event) =>
+      setColor({
+        name: "Custom Color",
+        hex: event.target.value,
+      })
+    }
+    className="mt-2 h-9 w-12 cursor-pointer"
+  />
+</div>
+
               <h3 className="mt-5 text-sm font-semibold">Metallic <span className="font-normal text-[#a47a46]">+Rp1.200</span></h3>
               <div className="mt-3 flex flex-wrap gap-3">
                 {metallicColors.map((item) => (
                   <button key={item.hex} type="button" title={item.name} aria-label={item.name} aria-pressed={color.hex === item.hex} onClick={() => setColor(item)} className={`h-11 w-11 rounded-full border-2 p-[3px] transition ${color.hex === item.hex ? "border-[#b58b50] ring-2 ring-[#e5c999]" : "border-gray-300"}`}>
-                    <span className="block h-full w-full rounded-full border border-black/10" style={{ background: gradients[item.hex] }} />
-                  </button>
-                ))}
-              </div>
-              <h3 className="mt-5 text-sm font-semibold">
+                 <span
+  className="block h-full w-full rounded-full border border-black/10"
+  style={{ background: gradients[item.hex] || item.hex }}
+/>
+</button>
+))}
+</div>
+
+<h3 className="mt-5 text-sm font-semibold">
   Premium <span className="font-normal text-[#a47a46]">+Rp1.500</span>
 </h3>
 
@@ -189,12 +355,20 @@ export default function BoothPage() {
         style={{ background: gradients[item.hex] || item.hex }}
       />
     </button>
+ 
   ))}
 </div>
-              <p className="mt-4 text-xs text-gray-600">Warna dipilih: <strong>{color.name}</strong></p>
-            </div>
-          </section>
-          <section className="rounded-2xl bg-white/90 p-5 shadow-md lg:sticky lg:top-5">
+
+<p className="mt-4 text-xs text-gray-600">
+  Warna dipilih: <strong>{color.name}</strong>
+</p>
+</div>
+  </>
+)}
+</section>
+
+<section className="rounded-2xl bg-white/90 p-5 shadow-md lg:sticky lg:top-5">
+
             <div className="flex items-center justify-between gap-3"><h2 className="text-base font-bold">03. Preview Frame</h2><span className="text-xs text-gray-500">{layout.label}</span></div>
             <div className="mt-4 flex min-h-[390px] items-center justify-center rounded-xl bg-gradient-to-br from-[#D8DCE0] to-[#EEE9E5] p-5">
              <div
@@ -206,7 +380,18 @@ export default function BoothPage() {
       : "max-w-[255px]"
   }`}
 >
+{frameType === "luxury" && selectedLuxuryFrame ? (
+  <img src={selectedLuxuryFrame.image} alt={selectedLuxuryFrame.name} className="block h-auto w-full object-contain" />
+) : frameType === "premium" && selectedPremiumFrame ? (
+  <img
+    src={selectedPremiumFrame.image}
+    alt={selectedPremiumFrame.name}
+    className="block h-auto w-full object-contain"
+  />
+) : (
   <FrameSample layout={layout} color={color.hex} />
+)}
+
 </div>
             </div>
             <div className="mt-4 flex items-center justify-between rounded-xl border border-[#eadbc5] bg-[#fbf7f0] p-4">
@@ -214,7 +399,7 @@ export default function BoothPage() {
             </div>
             <p className="mt-2 text-xs text-gray-500">Stiker tambahan dapat dipilih di halaman Create (Rp2.000/stiker).</p>
             <button type="button" onClick={continueToCreate} className="mt-5 w-full rounded-full bg-gradient-to-r from-[#b68a49] via-[#f4dca5] to-[#b68a49] px-6 py-4 text-sm font-bold text-black shadow-lg transition hover:brightness-105">CONTINUE TO CREATE →</button>
-          </section>
+                    </section>
         </div>
       </div>
     </main>
